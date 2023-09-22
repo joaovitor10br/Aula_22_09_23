@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+model Aluno {
+  id String @id @default(uuid())
+  email String @unique
+  name String
+  grupo Grupo? @relation("Lideranca")
+  grupoAluno Grupo @relation("Composicao", fields: [grupoId], references: [id])
+  grupoId String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+}
+model Professor {
+  id String @id @default(uuid())
+  email String @unique
+  name String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+}
+model Grupo {
+  id String @id @default(uuid())
+  aluno Aluno @relation("Lideranca", fields: [alunoId], references: [id])
+  alunoId String @unique
+  alunos Aluno[] @relation("Composicao")
+}
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  posts Post[]
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean @default(false)
+  author    User    @relation(fields: [authorId], references: [id])
+  authorId  Int
+}
